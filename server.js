@@ -15,9 +15,15 @@ MongoClient.connect('your-mongodb-url', (err, database) => {
 
 app.use(bodyParser.urlencoded({extended: true}));
 
-app.get('/', function (reqS,res){
-    res.sendFile(__dirname + '/index.html');
-});
+app.set('view engine', 'ejs'); // for ejs
+
+app.get('/', (req, res) => {
+    db.collection('quotes').find().toArray((err, result) => {
+      if (err) return console.log(err)
+      // renders index.ejs
+      res.render('index.ejs', {quotes: result})
+    })
+  })
 
 app.post('/quotes', (req, res) => {
     db.collection('quotes').save(req.body, (err, result) => {
